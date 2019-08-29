@@ -12,7 +12,9 @@ function figPhase = phaseVphasePlot(phase1, phase2, FOI, xStr, yStr, visibility)
 
 for iF = 1:numel(FOI)
   figPhase(iF) = figure('units', 'normalized', 'position', [0.002, .04, 1/2, .88/1.04], 'Visible', visibility); %#ok<*AGROW>
-  plot(phase1(:,iF),phase2(:,iF), '.', 'MarkerSize',10);
+  if sum(sum(~isnan(phase1))) && sum(sum(~isnan(phase2)))
+    plot(phase1(:,iF),phase2(:,iF), '.', 'MarkerSize',10);
+  end
   title(['Phase: ' num2str(FOI(iF)) ' Hz']);
   xlabel([xStr ' phase (rad)'])
   ylabel([yStr ' phase (rad)'])

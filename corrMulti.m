@@ -13,9 +13,17 @@ end
 r = zeros(1,size(mat,1));
 pval = zeros(1,size(mat,1));
 for iRow = 1:size(mat,1)
-  if size(vecOrMat,1) == size(mat,1)
-    [r(iRow), pval(iRow)] = corrSimple(vecOrMat(iRow,:), mat(iRow,:), type);
+  ind1 = isnan(vecOrMat(min([iRow size(vecOrMat,1)]),:));
+  ind2 = isnan(mat(iRow,:));
+  ind = ~(ind1 + ind2);
+  if sum(ind)
+    if size(vecOrMat,1) == size(mat,1)
+      [r(iRow), pval(iRow)] = corrSimple(vecOrMat(iRow,ind), mat(iRow,ind), type);
+    else
+      [r(iRow), pval(iRow)] = corrSimple(vecOrMat(1,ind), mat(iRow,ind), type);
+    end
   else
-    [r(iRow), pval(iRow)] = corrSimple(vecOrMat(1,:), mat(iRow,:), type);
+    r(iRow) = NaN;
+    pval(iRow) = NaN;
   end
 end

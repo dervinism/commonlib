@@ -9,9 +9,9 @@ if nargin < 3
 end
 
 if strcmpi(type,'circular')
-  [r, pval] = circ_corrcc(vec1, vec2);
+  [r, pval] = circ_corrcc(vec1(~isnan(vec1) & ~isnan(vec2)), vec2(~isnan(vec1) & ~isnan(vec2)));
 else
-  [r, pval] = corr([vec1' vec2'], 'Type',type);
+  [r, pval] = corr([vec1(~isnan(vec1) & ~isnan(vec2))' vec2(~isnan(vec1) & ~isnan(vec2))'], 'Type',type);
   r = r(2);
   pval = pval(2);
 end

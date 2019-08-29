@@ -12,7 +12,9 @@ function figCoh = cohVcohPlot(coh1, coh2, FOI, xStr, yStr, visibility)
 
 for iF = 1:numel(FOI)
   figCoh(iF) = figure('units', 'normalized', 'position', [0.002, .04, 1/2, .88/1.04], 'Visible', visibility); %#ok<*AGROW>
-  plot(coh1(:,iF),coh2(:,iF), '.', 'MarkerSize',10);
+  if sum(sum(~isnan(coh1))) && sum(sum(~isnan(coh2)))
+    plot(coh1(:,iF),coh2(:,iF), '.', 'MarkerSize',10);
+  end
   title(['Phase: ' num2str(FOI(iF)) ' Hz']);
   xlabel([xStr ' coherence'])
   ylabel([yStr ' coherence'])
