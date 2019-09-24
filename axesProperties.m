@@ -6,7 +6,7 @@ function ca = axesProperties(titleStr, titleSzMult, titleWeight, boxStr,...
 %        titleSzMult - title font size multiplier (scalar);
 %        titleWeight - title Weight (string: 'normal', 'bold');
 %        boxStr - figure border (string: 'on' or 'off');
-%        col - frame colour (color string or vector code);
+%        col - frame colour (colour string or vector code);
 %        font - text font type;
 %        fontSz - font size;
 %        labelSzMult - label font size multiplier;
