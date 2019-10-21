@@ -11,7 +11,12 @@ end
 if strcmpi(type,'circular')
   [r, pval] = circ_corrcc(vec1(~isnan(vec1) & ~isnan(vec2)), vec2(~isnan(vec1) & ~isnan(vec2)));
 else
-  [r, pval] = corr([vec1(~isnan(vec1) & ~isnan(vec2))' vec2(~isnan(vec1) & ~isnan(vec2))'], 'Type',type);
-  r = r(2);
-  pval = pval(2);
+  if sum(vec1(~isnan(vec1) & ~isnan(vec2))) && sum(vec2(~isnan(vec1) & ~isnan(vec2)))
+    [r, pval] = corr([vec1(~isnan(vec1) & ~isnan(vec2))' vec2(~isnan(vec1) & ~isnan(vec2))'], 'Type',type);
+    r = r(2);
+    pval = pval(2);
+  else
+    r = 0;
+    pval = 1;
+  end
 end
