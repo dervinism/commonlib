@@ -1,10 +1,10 @@
 function figPhase = phaseVphasePlot(phase1, phase2, FOI, xStr, yStr, visibility)
 % Plot two phase data vectors on separate axes. Can be two matrices of
 % equal dimensions. In the latter case multiple figures are produced
-% corresponding to the matrix rows. This function is intended to be used
+% corresponding to the matrix columns. This function is intended to be used
 % for visualising correlations.
 % Input: phase1 and phase2 are data row vectors or matrices.
-%        FOI is a vector with corresponding (i.e., rows of matrices)
+%        FOI is a vector with corresponding (i.e., columns of matrices)
 %          frequencies of interest.
 %        xStr is the beginning of the x-axis label string.
 %        yStr is the beginning of the y-axis label string.
