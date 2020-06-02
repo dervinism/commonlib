@@ -2,9 +2,13 @@ function [r, pval] = corrMulti(vecOrMat, mat, type)
 % Run correlation analyses on rows of matrices. In case the first input is
 % a row vector, analyses are performed on this vector and all rows of the
 % second input matrix. Supported correlation analysis types are 'Pearson',
-% 'Kendall', 'Spearman', and 'circular'. Default is Pearson. The first
-% output is a row vector with correlation coefficients, whereas the second
-% output is a row vector with corresponding p-values.
+% 'Kendall', 'Spearman', 'circular', 'circularnp' (non-parametric circular),
+% 'circlinear', and 'circlinearnp' (non-parametric circlinear). Default is
+% Pearson. The first output is a row vector with correlation coefficients,
+% whereas the second output is a row vector with corresponding p-values. In
+% the case of circular-linear correlation, vecOrMat is expected to be
+% circular while mat is linear. The function depends on the Circular
+% Statistics Toolbox.
 
 if nargin < 3
   type = 'Pearson';
