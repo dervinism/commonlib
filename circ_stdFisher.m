@@ -6,12 +6,14 @@ function s0 = circ_stdFisher(angularData)
 %   Input: angularData - sample of angles in radians.
 %   Output: s0.
 %
-%   Dependencies: circmean, circ_r.
+%   Dependencies: circmean and circ_r of Circular Statistics Toolbox.
 %
 % References:
 %   Fisher, N. I. & Lewis, T. (1983). Estimating the common mean direction
 %   of several circular or spherical distributions with differing
 %   dispersions. Biometrika 70, 333-41.
+
+% By Martynas Dervinis (martynas.dervinis@gmail.com)
 
 angularData = torow(angularData);
 n = numel(angularData);

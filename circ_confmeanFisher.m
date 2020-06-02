@@ -1,7 +1,6 @@
 function [t0, t] = circ_confmeanFisher(alpha, xi, dim)
-%
-% t = circ_meanFisher(alpha, xi, dim)
-%   Computes the confidence limits on the mean for circular data without
+% [t0, t] = circ_meanFisher(alpha, xi, dim)
+%   Computes confidence limits on the mean for circular data without
 %   making assumptions about the data distribution.
 %
 %   Input: alpha - sample of angles in radians. If it is a matrix, then
@@ -13,14 +12,14 @@ function [t0, t] = circ_confmeanFisher(alpha, xi, dim)
 %   Output: t0 - half (1-xi)% confidence interval.
 %           t - mean +- d yields upper/lower (1-xi)% confidence limit.
 %
-%   Dependencies: circmean, circ_std, norminv, asin.
+%   Dependencies: circmean and circ_std of Circular Statistics Toolbox.
 %
 % References:
 %   Fisher, N. I. & Lewis, T. (1983). Estimating the common mean direction
 %   of several circular or spherical distributions with differing
 %   dispersions. Biometrika 70, 333-41.
 
-% By Martynas Dervinis (martynas.dervinis@gmail.com
+% By Martynas Dervinis (martynas.dervinis@gmail.com)
 
 if nargin < 3
   dim = 1;

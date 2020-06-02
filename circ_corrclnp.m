@@ -18,7 +18,7 @@ function [rho, pval, U_n] = circ_corrclnp(alpha, x)
 %               and Circular Statistics. Dissertations. 2501.
 %               https://ecommons.luc.edu/luc_diss/2501
 
-% By Martynas Dervinis (martynas.dervinis@gmail.com
+% By Martynas Dervinis (martynas.dervinis@gmail.com)
 
 % Remove NaNs
 inds = ~isnan(alpha) & ~isnan(x);

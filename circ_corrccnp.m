@@ -1,5 +1,5 @@
 function [r, pval, U, r0_alpha] = circ_corrccnp(alpha, beta)
-% [r, pval] = circ_corrccnp(alpha, beta)
+% [r, pval, U, r0_alpha] = circ_corrccnp(alpha, beta)
 %
 % Function performs a non-parametric circular-circular correlation as
 % described by Zar (1999) based on Spearman rank correlation. The function
@@ -8,13 +8,15 @@ function [r, pval, U, r0_alpha] = circ_corrccnp(alpha, beta)
 %          that numel(alpha) == numel(beta)are true.
 % Output: r - the correlation coefficient.
 %         pval - p-value.
-%         U statistic as in Mardia, K. V. (1975).
+%         U statistic as in Mardia (1975).
 %         r0_alpha - cut-off r value at alpha = 0.05 value of significance.
 %
 % References: Zar JH (1999). Biostatistical Analysis. 4th edition. Prentice
 %               Hill.
 %             Mardia, K. V. (1975). Statistics of directional data. J.
 %               Royal Statist. Soc. B37: 349-393.
+
+% By Martynas Dervinis (martynas.dervinis@gmail.com)
 
 assert(numel(alpha) == numel(beta));
 
