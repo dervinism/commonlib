@@ -29,12 +29,16 @@ if ~isa(fig, 'matlab.ui.Figure')
   error('The supplied input is not a figure handle');
 end
 
-% Copy olf figure to the new figure
+% Copy old figure to the new figure
 figH = figure;
 for child = 1:numel(fig.Children)
   if strcmp(fig.Children(child).Type,'axes')
     set(fig.Children(child), 'Parent',figH);
     axes = gca;
+    remainingAxes = numel(fig.Children);
+    if remainingAxes <= child
+      break
+    end
   end
 end
 
@@ -54,4 +58,8 @@ if ~isempty(legendPosition)
       return
     end
   end
+end
+
+if ischar(fig)
+  close(fig);
 end

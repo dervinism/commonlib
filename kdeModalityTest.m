@@ -1,52 +1,58 @@
-function [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modes, fits, fitPts] = kdeModalityTest(alpha, type, lambda_0, m_0, modeStop)
-% [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modePeaks, fits, fitPts] = kdeModalityTest(alpha, type, lambda_0, m_0, modeStop)
+function [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modes, fits, fitPts] = kdeModalityTest(alpha, type, lambda_0, m_0, modeStop, binSize)
+% [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modes, fits, fitPts] = kdeModalityTest(alpha, type, lambda_0, m_0, modeStop, binSize)
 %
-% Function determines data modality (number of modes in the data). Modality
-% estimation is based on kernel density excess mass estimate approach
-% described by Fisher and Marron (2001). The linear goodness-of-fit test is
-% based on Cramer-von Misses T_k statistic (not implemented yet). The
-% circular goodness-of-fit test is based on Watson U2 statistic as in
-% Watson (1961).
+% Function determines data modality (number of modes in the data) and data
+% mode properties. Modality estimation is based on kernel density excess
+% mass estimate approach described by Fisher and Marron (2001). The linear
+% goodness-of-fit test is based on Cramer-von Misses T_k statistic (not
+% implemented yet). The circular goodness-of-fit test is based on Watson U2
+% statistic as in Watson (1961).
 %
 % Input: alpha - data sample vector. If analysis type is circular, data
 %                should be in radians.
-%        type - data type vector: 'linear' or 'circular'.
+%        type - data type vector: 'linear' or 'circular'. Default is
+%               'linear'.
 %        lambda_0 - modality estimation parameter for weeding out low
 %                   amplitude modes. Default is 0.
 %        m_0 - modality estimation parameter for weeding out low mass
-%              modes. Default is 0.01 (corresponds to 1% of the overall
-%              distribution).
+%              modes. m_0 must be within the range of 0.01-1. Default is
+%              0.05 (corresponds to 5% of the overall distribution).
 %        modeStop - the maximum number of modes to consider. The default
-%              value is inf but in reality it is limited by the smallest
-%              bandwidth which is 1/500th of the data range if data is
-%              linear and 1/(2*pi) if data is circular.
+%                   value is inf but in reality it is limited by the
+%                   fitting sampling size which is 1/500th of the data
+%                   range if data is linear and 1/(2*pi) if data is
+%                   circular.
+%        binSize - a two-entry vector describing the bin size. First entry
+%                  describes the bin size for mode estimation part. The
+%                  second entry describes the bin size for statistical
+%                  testing part. Default size for the first entry is
+%                  1/500th for linear data and 1/(2*pi) for circular data.
+%                  Default size for the second entry is 1/10th of the
+%                  first entry.
 %
 % Output: resultsTable is the main output variable that will give you a
 %                     comprehensive summary of data modality. It is a
 %                     matrix with rows corresponding to different data
 %                     descriptors. Row one indicates the number of modes.
 %                     Row two is the bandwidth. Row three is the excess
-%                     mass estimate. It should be at least 5% for modality
-%                     estimates to be deemed satisfactory. Row four is the
-%                     goodness-of-fit statistic (linear T_k or circular
-%                     U2). Row five is a corresponding p-value for the
-%                     difference between the fitted modal dstribution and
-%                     the actual data. If this p-value exceeds 0.05, that
-%                     means that the null hypothesis of the fitted modal
-%                     and empirical data distributions being drawn from the
-%                     same distribution can no longer be rejected. The row
-%                     six is the corresponding p-value for the similarity
-%                     of the fitted and empirical distributions:
+%                     mass estimate. Row four is the goodness-of-fit
+%                     statistic (linear T_k or circular U2). Row five is a
+%                     corresponding p-value for the difference between the
+%                     fitted modal dstribution and the actual data. If this
+%                     p-value exceeds 0.05, that means that the null
+%                     hypothesis of the fitted modal and empirical data
+%                     distributions being drawn from the same distribution
+%                     can no longer be rejected. The row six is the
+%                     corresponding p-value for the similarity of the
+%                     fitted and empirical distributions:
 %                     p-value_similarity = 1 - p-value_difference. Fits
 %                     should have similarity p-value of less than 0.05 for
 %                     them to be deemed as good enough. You should use the
-%                     cut-off of 5% for excess mass estimate and a
-%                     similarity p-value of 0.05 for deciding the minimal
-%                     modality (lower limit) of your data. Both of these
-%                     criteria have to be satisfied simultaneously.
-%                     Increasing the number of modes in your fitted
-%                     distribution is most likely to provide better fits
-%                     but these are also likely to be overfits.
+%                     cut-off of 0.05 for deciding the minimal modality
+%                     (lower limit) of your data. Increasing the number of
+%                     modes in your fitted distribution is most likely to
+%                     provide better fits but these are also likely to be
+%                     overfits.
 %         modalityFits - rows one to three of resultsTable.
 %         testStatistic - row four of resultsTable.
 %         pValDiff - row five of resultsTable.
@@ -65,7 +71,8 @@ function [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modes, f
 %         fitPts - fit points. Use plot(fitPts,fits(1-to-n,:)) to display
 %                  the fitted modal distribution function.
 %
-% Dependencies: circ_ksdensity (Muir, 2020) and WatsonU2_goodnessOfFit.
+% Dependencies: circ_ksdensity (Muir, 2020) and WatsonU2_goodnessOfFit,
+%               recentrePhase.
 %
 % References: N. I. Fisher and J. S. Marron, "Mode Testing via the Excess
 %               Mass Estimate," Biometrika 88 (2), 499-517 (2001).
@@ -79,14 +86,43 @@ function [resultsTable, modalityFits, testStatistic, pValDiff, pValFit, modes, f
 % by Martynas Dervinis (martynas.dervinis@gmail.com)
 
 % Parameters of the Excess Mass Estimate algorithm
-if nargin < 5
+if nargin < 5 || isempty(modeStop)
   modeStop = inf;
 end
-if nargin < 4
+if nargin < 4 || isempty(m_0)
+  m_0 = 0.05;
+elseif m_0 < 0.01
   m_0 = 0.01;
+elseif m_0 > 1
+  m_0 = 1;
 end
-if nargin < 3
+if nargin < 3 || isempty(lambda_0)
   lambda_0 = 0;
+end
+if nargin < 2 || isempty(type) || strcmpi(type, '')
+  type = 'linear';
+elseif ~strcmpi(type, 'linear') && ~strcmpi(type, 'circular')
+  error('The function only works with linear or circular data types');
+end
+if strcmpi(type, 'linear')
+  domain = [min(alpha) max(alpha)];
+elseif strcmpi(type, 'circular')
+  domain = [-pi pi];
+end
+if nargin < 6 || isempty(binSize)
+  if strcmpi(type, 'linear')
+    nSamples = 500;
+    binSize(1) = (domain(2) - domain(1))/nSamples;
+  elseif strcmpi(type, 'circular')
+    nSamples = 360;
+    binSize(1) = (2*pi)/nSamples;
+  end
+  binSize(2) = binSize(1)/10;
+end
+samplePts = domain(1)+binSize(1):binSize(1):domain(2);
+denseSamplePts = domain(1)+binSize(2):binSize(2):domain(2);
+if ~(nargin < 6 || isempty(binSize))
+  nSamples = numel(samplePts);
 end
 
 % Preprocess data
@@ -95,24 +131,11 @@ if strcmpi(type, 'circular')
   alpha = recentrePhase(alpha, 0);
 end
 
-% Sampling parameters
-if strcmpi(type, 'linear')
-  nSamples = 500;
-  domain = [min(alpha) max(alpha)];
-  binSize = (domain(2) - domain(1))/nSamples;
-elseif strcmpi(type, 'circular')
-  nSamples = 360;
-  domain = [-pi pi];
-  binSize = (2*pi)/nSamples;
-end
-samplePts = domain(1):binSize:domain(2);
-denseSamplePts = domain(1):binSize/1000:domain(2);
-
 % Estimate the minimum number of modes required to describe the data
-modalityFits = []; testStatistic = []; pVal = []; resultsTable = []; fits = []; fitPts = [];
-h = ((nSamples/4)*binSize):-binSize:binSize;
+resultsTable = []; modalityFits = []; testStatistic = []; pValDiff = []; pValFit = []; modes = []; fits = []; fitPts = [];
+h = ((nSamples/4)*binSize(1)):-binSize(1):binSize(1);
 for iH = 1:numel(h) % loop through increasingly smaller h size
-  disp([num2str(iH) '/' num2str(numel(h))]);
+%   disp([num2str(iH) '/' num2str(numel(h))]);
   
   % Step 1: Kernel density estimation
   if strcmpi(type, 'linear')
@@ -188,10 +211,6 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
     for iMode = 1:numel(E)
       if minorModes(iMode) && max(base{iMode}) <= lambda_0
         modes2eliminate = [modes2eliminate iMode];
-        base(iMode) = [];
-        baseLocs(iMode) = [];
-        lambda(iMode) = [];
-        lambdaLocs(iMode) = [];
       end
     end
     if ~isempty(modes2eliminate)
@@ -199,6 +218,10 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
       centreMass = centreMass(~modes2eliminate);
       peaks = peaks(~modes2eliminate);
       peakLocs = peakLocs(~modes2eliminate);
+      base = base(~modes2eliminate);
+      baseLocs = baseLocs(~modes2eliminate);
+      lambda = lambda(~modes2eliminate);
+      lambdaLocs = lambdaLocs(~modes2eliminate);
     end
   end
   
@@ -296,9 +319,6 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
     lambda(minorModes) = [];
     lambdaLocs(minorModes) = [];
   end
-  if numel(E) > modeStop
-    return % This is where the code stops if the maximum number of modes has been exceeded
-  end
   
 %   figure; hold on
 %   plot(extendedSamplePts,extendedF);
@@ -322,11 +342,16 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
     S_k = 0;
   end
   
-%   figure; hold on
+  if numel(E) > modeStop
+    return % This is where the code stops if the maximum number of modes has been exceeded
+  end
+  
+%   figH = figure; hold on
 %   plot(samplePts,f);
 %   plot(samplePts(peakLocs),peaks, 'g.', 'MarkerSize',10);
 %   plot(samplePts(troughLocs),troughs, 'r.', 'MarkerSize',10);
 %   plot(extendedSamplePts(centreMass),extendedF(centreMass), 'b.', 'MarkerSize',10);
+%   plot(samplePts,circ_ksdensity(alpha, samplePts, domain, h(end)));
 %   hold off
 %   disp([numel(E), S_k]);
 %   close all
@@ -348,7 +373,7 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
       end
       [stat, pval] = WatsonU2_goodnessOfFit(F_alpha);
 %       disp([stat, pval]);
-%       close all
+%       close(figH);
     end
   else
     stat = NaN;
@@ -368,8 +393,8 @@ for iH = 1:numel(h) % loop through increasingly smaller h size
       modes{1}.masses = E;
       fits = f;
       fitPts = samplePts;
-    elseif (resultsTable(1,end) == numel(E) && resultsTable(6,end) < pval) ||...
-        (resultsTable(1,end) == numel(E) && resultsTable(6,end) == pval && resultsTable(2,end) < S_k)
+    elseif (resultsTable(1,end) == numel(E) && resultsTable(5,end) < pval) ||...
+        (resultsTable(1,end) == numel(E) && resultsTable(5,end) == pval && resultsTable(2,end) < S_k)
       modalityFits(:,end) = [numel(E); numel(E); S_k];
       testStatistic(end) = stat;
       pValDiff(end) = pval;
