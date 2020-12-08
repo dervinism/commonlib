@@ -23,6 +23,34 @@ function [figH, ax1, ax2, varargout] = adjacentFigs(input)
 %         ax2 - the second axes handle.
 %         ax3 - the second axes handle (in the case of three figures).
 
+if ~isfield(input,'xlim1')
+  input.xlim1 = [0.01 120];
+end
+if ~isfield(input,'ylim1')
+  input.ylim1 = [-pi pi];
+end
+if ~isfield(input,'legendLocation1')
+  input.legendLocation1 = 'NorthEast';
+end
+if ~isfield(input,'xlim2')
+  input.xlim2 = [0.01 120];
+end
+if ~isfield(input,'ylim2')
+  input.ylim2 = [-pi pi];
+end
+if ~isfield(input,'legendLocation2')
+  input.legendLocation2 = 'NorthEast';
+end
+if ~isfield(input,'xlim3')
+  input.xlim3 = [0.01 120];
+end
+if ~isfield(input,'ylim3')
+  input.ylim3 = [-pi pi];
+end
+if ~isfield(input,'legendLocation3')
+  input.legendLocation3 = 'NorthEast';
+end
+
 [figH, ax1] = fig2liveEditor([input.figFolder filesep input.figname1], input.xlim1, input.ylim1, input.legendLocation1);
 
 [~, ax2] = fig2liveEditor([input.figFolder filesep input.figname2], input.xlim2, input.ylim2, input.legendLocation2);
