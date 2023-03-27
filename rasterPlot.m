@@ -5,12 +5,27 @@ function fH = rasterPlot(rasterMat, time, opt)
 % Input: rasterMat - spiking matrix.
 %        time - corresponding time in seconds.
 %        opt - an options structure variable with the following fields:
+%          type - 'regular' for a regular raster and 'normalised' for a
+%                 normalised one. Each neuron is divided by its mean.
+%                 Default is 'regular'.
 %          title - a figure title string.
 %          dividingLine - a line dividing units that are positively and
 %                         negatively correlated with the pupil area.
+%          percentageStr - a proportion of units/MUAs that are positively
+%                          correlated with the pupil area. If this field is
+%                          suppplied, then the value is displayed on the
+%                          right hand side of the dividing line.
 %          xLim - range.
 %          yLabel - y-axis label.
 % Output: fH - raster plot figure handle.
+
+
+%% Normalise the raster matrix
+if ~isfield(opt, 'type')
+  opt.type = 'regular';
+elseif isfield(opt, 'type') && strcmp(opt.type, 'normalised')
+  rasterMat = rasterMat./mean(rasterMat,2);
+end
 
 
 %% Adjust the range
@@ -29,16 +44,35 @@ period = time(end) - time(1);
 
 %% Draw the raster
 fH = figure;
-p = pcolor(flipud(rasterMat));
-p.EdgeColor = 'none';
+if strcmp(opt.type, 'regular')
+  p = pcolor(flipud(rasterMat));
+  p.EdgeColor = 'none';
+elseif strcmp(opt.type, 'normalised')
+  imagesc(rasterMat, [0 2]);
+end
 colormap(flipud(gray));
 %colormap(flipud([0 0 0; 1 1 1]));
 
 nUnits = size(rasterMat,1);
 if nargin == 3 && isfield(opt, 'dividingLine')
   hold on
-  plot(xlim, nUnits-[opt.dividingLine opt.dividingLine], '--r', 'LineWidth',2)
+  if strcmp(opt.type, 'regular')
+    plot(xlim, nUnits-[opt.dividingLine opt.dividingLine], '--r', 'LineWidth',2)
+  elseif strcmp(opt.type, 'normalised')
+    plot(xlim, [opt.dividingLine opt.dividingLine], '--r', 'LineWidth',2)
+  end
   hold off
+end
+if nargin == 3 && isfield(opt, 'percentageStr') && isfield(opt, 'dividingLine')
+  if isnumeric(opt.percentageStr)
+    opt.percentageStr = num2str(opt.percentageStr);
+  end
+  xLim = xlim;
+  if strcmp(opt.type, 'regular')
+    text(xLim(2)+1,nUnits-opt.dividingLine, [opt.percentageStr '%'], 'Color','r');
+  elseif strcmp(opt.type, 'normalised')
+    text(xLim(2)+1,opt.dividingLine, [opt.percentageStr '%'], 'Color','r');
+  end
 end
 
 
@@ -67,10 +101,15 @@ yTickLabel = cell(size(yAxesTicks));
 for iTick = 1:numel(yAxesTicks)
   yTickLabel{iTick} = num2str(unitTicks(iTick));
 end
-yAxesTicks = [fliplr(nUnits - yAxesTicks + 1) nUnits];
-[yAxesTicks, inds] = unique(yAxesTicks);
-yTickLabel = [fliplr(yTickLabel), '0'];
-yTickLabel = yTickLabel(inds);
+if strcmp(opt.type, 'regular')
+  yAxesTicks = [fliplr(nUnits - yAxesTicks + 1) nUnits];
+  [yAxesTicks, inds] = unique(yAxesTicks);
+  yTickLabel = [fliplr(yTickLabel), '0'];
+  yTickLabel = yTickLabel(inds);
+elseif strcmp(opt.type, 'normalised')
+  yAxesTicks = [1 yAxesTicks];
+  yTickLabel = ['0' yTickLabel];
+end
 
 
 %% Tidy the figure

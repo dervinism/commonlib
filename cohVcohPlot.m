@@ -15,7 +15,7 @@ for iF = 1:numel(FOI)
   if sum(sum(~isnan(coh1))) && sum(sum(~isnan(coh2)))
     plot(coh1(:,iF),coh2(:,iF), '.', 'MarkerSize',10);
   end
-  title(['Phase: ' num2str(FOI(iF)) ' Hz']);
+  title(['Coherence: ' num2str(FOI(iF)) ' Hz']);
   xlabel([xStr ' coherence'])
   ylabel([yStr ' coherence'])
 end

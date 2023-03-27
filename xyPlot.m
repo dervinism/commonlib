@@ -34,7 +34,7 @@ for iF = 1:numel(FOI)
   
   % Plot the data
   if sum(sum(~isnan(x))) && sum(sum(~isnan(y)))
-    plot(x(~isnan(x(:,iF)) & ~isnan(y(:,iF)), iF), y(~isnan(x(:,iF)) & ~isnan(y(:,iF)), iF), '.', 'MarkerSize',10);
+    plot(x(~isnan(x(:,iF)) & ~isnan(y(:,iF)), iF), y(~isnan(x(:,iF)) & ~isnan(y(:,iF)), iF), 'k.', 'MarkerSize',30);
   end
   hold on
   

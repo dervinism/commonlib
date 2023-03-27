@@ -41,5 +41,7 @@ if find(size(upper)==(max(size(upper))))<2
 upper=upper'; end
 
 F = fill([x fliplr(x)],[upper fliplr(lower)],colour, 'EdgeColor', 'none');
-alpha(F, transparency);
+if transparency < 1
+  alpha(F, transparency);
+end
 

@@ -1,8 +1,9 @@
-function [yFit, slope] = fitLine(x, y, type)
-% curve = BestFitLine(x, y)
+function [yFit, slope, coefficients] = fitLine(x, y, type)
+% [yFit, slope, coefficients] = fitLine(x, y, type)
 %
 % Function fits a line to the data y given x. It outputs the y-values of
-% the curve corresponding to x, as well as the slope of the line. Currently
+% the curve corresponding to x, as well as the slope of the line. Full set
+% of coefficients is contained within the coefficients variable. Currently
 % supported types are linear-linear and linear-circular (linear-linear is
 % default).
 
@@ -15,9 +16,9 @@ if strcmpi(type, 'linear-linear')
   yFit = polyval(coefficients , x);
   slope = coefficients(1);
 elseif strcmpi(type, 'linear-circular')
-  beta = CircularRegression(x, y);
-  yFit = beta(1).*x + beta(2);
-  slope = beta(1);
+  coefficients = CircularRegression(x, y);
+  yFit = coefficients(1).*x + coefficients(2);
+  slope = coefficients(1);
 else
   error([type 'is currently not supported']);
 end

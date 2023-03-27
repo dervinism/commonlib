@@ -18,6 +18,8 @@ function [figH, ax1, ax2, varargout] = adjacentFigs(input)
 %   legendLocation1
 %   legendLocation2
 %   legendLocation3 (optional)
+%   figSize (optional)
+%   tight (optional).
 % Output: figH - a handle to the newly created figure.
 %         ax1 - the first axes handle.
 %         ax2 - the second axes handle.
@@ -50,10 +52,20 @@ end
 if ~isfield(input,'legendLocation3')
   input.legendLocation3 = 'NorthEast';
 end
+if ~isfield(input,'figSize')
+  input.figSize = [];
+end
+if ~isfield(input,'tight')
+  input.tight = false;
+end
+if ~isfield(input,'figPos')
+  input.tight = [];
+end
 
-[figH, ax1] = fig2liveEditor([input.figFolder filesep input.figname1], input.xlim1, input.ylim1, input.legendLocation1);
+[figH, ax1] = fig2liveEditor([input.figFolder filesep input.figname1], input.xlim1, input.ylim1, input.legendLocation1, input.figSize, input.tight);
+%ax1.XTickLabel = {'-\pi','-\pi/2','0','\pi/2','\pi'};
 
-[~, ax2] = fig2liveEditor([input.figFolder filesep input.figname2], input.xlim2, input.ylim2, input.legendLocation2);
+[~, ax2] = fig2liveEditor([input.figFolder filesep input.figname2], input.xlim2, input.ylim2, input.legendLocation2, input.figSize, input.tight);
 set(ax2, 'Parent',figH);
 
 if isfield(input, 'figname3') && ~isempty(input.figname3)
@@ -66,7 +78,7 @@ if isfield(input, 'figname3') && ~isempty(input.figname3)
   if ~isfield(input, 'legendLocation3')
     input.legendLocation3 = [];
   end
-  [~, ax3] = fig2liveEditor([input.figFolder filesep input.figname3], input.xlim3, input.ylim3, input.legendLocation3);
+  [~, ax3] = fig2liveEditor([input.figFolder filesep input.figname3], input.xlim3, input.ylim3, input.legendLocation3, input.figSize, input.tight);
   set(ax3, 'Parent',figH);
   varargout{1} = ax3;
 end
@@ -75,9 +87,17 @@ if exist('ax3','var')
   subplot(1,3,1,ax1);
   subplot(1,3,2,ax2);
   subplot(1,3,3,ax3);
-  set(figH, 'Position', [0 0 1800 500])
+  if isfield(input, 'figPos') && ~isempty(input.figPos)
+    set(figH, 'Position', input.figPos)
+  else
+    set(figH, 'Position', [0 0 1800 500])
+  end
 else
   subplot(1,2,1,ax1);
   subplot(1,2,2,ax2);
-  set(figH, 'Position', [0 0 1200 500])
+  if isfield(input, 'figPos') && ~isempty(input.figPos)
+    set(figH, 'Position', input.figPos)
+  else
+    set(figH, 'Position', [0 0 1200 500])
+  end
 end

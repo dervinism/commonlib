@@ -12,8 +12,12 @@ upperLimit = phaseCentre + pi;
 lowerLimit = phaseCentre - pi;
 for i = 1:numel(phaseData)
   if phaseData(i) > upperLimit
-    phaseData(i) = phaseData(i) - 2*pi;
+    while phaseData(i) > upperLimit
+      phaseData(i) = phaseData(i) - 2*pi;
+    end
   elseif phaseData(i) < lowerLimit
-    phaseData(i) = phaseData(i) + 2*pi;
+    while phaseData(i) < lowerLimit
+      phaseData(i) = phaseData(i) + 2*pi;
+    end
   end
 end

@@ -41,11 +41,15 @@ xlabel(xLab);
 if ~isempty(xRange)
     xlim(xRange);
 end
-set(gca, 'XTick', xTicks);
+if ~isempty(xTicks)
+  set(gca, 'XTick', xTicks);
+end
 ca.YRuler.Axle.Visible = yVisible;
 set(gca, 'YColor', yCol);
 ylabel(yLab);
 if ~isempty(yRange)
     ylim(yRange);
 end
-set(gca, 'YTick', yTicks);
+if ~isempty(yTicks)
+  set(gca, 'YTick', yTicks);
+end
