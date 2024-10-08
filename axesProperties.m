@@ -35,7 +35,12 @@ set(gca, 'TickDir', tickDir);
 title(titleStr);
 set(gca, 'TitleFontSizeMultiplier', titleSzMult);
 set(gca, 'TitleFontWeight', titleWeight);
-ca.XRuler.Axle.Visible = xVisible;
+try
+  ca.XRuler.Axle.Visible = xVisible;
+catch
+  pause(0.1)
+  ca.XRuler.Axle.Visible = xVisible;
+end
 set(gca, 'XColor', xCol);
 xlabel(xLab);
 if ~isempty(xRange)

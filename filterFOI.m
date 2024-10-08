@@ -1,5 +1,5 @@
 function filtData = filterFOI(data, filt)
-% This function that filters the signal at chosen frequencies and outputs a
+% Function filters a signal at chosen frequencies and outputs a
 % matrix with rows corresponding to filter pass-band frequencies.
 % Input: data row vector.
 %        filt is a structure with following fields:
@@ -57,6 +57,6 @@ end
 % Filter the signal
 filtData = zeros(numel(filt.FOI),numel(data));
 for iF = 1:numel(filt.FOI)
-  filtData(iF,:) = filtfilt(d(iF),data);
+  filtData(iF,:) = filtfilt(d(iF),double(data));
 %   plot(filtData(iF,:),'b')
 end
