@@ -55,7 +55,7 @@ if alphaSize(1) > 1 && alphaSize(2) > 1
   for iCond = 1:nCond
     if dim == 1
       u(iCond) = circmean(alpha(~isnan(alpha(:,iCond)),iCond));
-      s0(iCond) = circ_std(alpha(~isnan(alpha(:,iCond)),iCond));
+      s0(iCond) = circ_stdFisher(alpha(~isnan(alpha(:,iCond)),iCond));
     elseif dim == 2
       u(iCond) = circmean(alpha(iCond,~isnan(alpha(iCond,:))));
       s0(iCond) = circ_stdFisher(alpha(iCond,~isnan(alpha(iCond,:))));

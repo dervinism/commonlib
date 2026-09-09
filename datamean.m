@@ -30,7 +30,7 @@ end
 if strcmp(meanType, 'regular')
     dataMean = mean(data, 1, 'omitnan');
     dataStd = std(data, 1, 'omitnan');
-    dataSEM = dataStd ./ n;
+    dataSEM = dataStd ./ sqrt(n);
     CI95 = zeros(2,F);
     dataCI95 = zeros(2,F);
     for f = 1:F
